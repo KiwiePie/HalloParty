@@ -14,10 +14,12 @@ if(!fs.existsSync('./client-info.json')) { //check if client information file ex
     console.log(jsonString);
     fs.writeFileSync('./client-info.json', jsonString)
 }
- const data = fs.readFileSync('./client-info.json');
+ const data = fs.readFileSync('./client-info.json'); 
  const clientInfo = JSON.parse(data);
  const CLIENT_ID = clientInfo.clientId;
  const TOKEN = clientInfo.clientToken; 
+
+
 
 const commands = [
   {
@@ -59,7 +61,7 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-const Costume = require("./costume.js")
+const Costume = require("./costume.js") //calls costume class
 
 client.on('messageCreate', message =>{
     console.log(message.content);
