@@ -1,6 +1,6 @@
 class Costume {
     constructor(avatarUrl, costumeName){
-        this.avatarUrl = AvatarUrl;
+        this.avatarUrl = avatarUrl;
         this.costumeName = costumeName; 
     }
 }
