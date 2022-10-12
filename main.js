@@ -1,5 +1,7 @@
 const prompt = require('prompt-sync')();
+const CLIENT_ID = prompt("Paste Discord Bot ID: ");
 const TOKEN = prompt("Paste Discord Bot Token: ");
+
 const { REST, Routes } = require('discord.js');
 
 const commands = [
@@ -15,7 +17,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
   try {
     console.log('Started refreshing application (/) commands.');
 
-    await rest.put(Routes.applicationCommands('1029611795146604566'), { body: commands });
+    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 
     console.log('Successfully reloaded application (/) commands.');
   } catch (error) {
