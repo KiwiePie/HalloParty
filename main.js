@@ -57,16 +57,19 @@ client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!');
+    await interaction.reply('donkey kong!');
   }
 });
 
 const Costume = require("./costume.js") //calls costume class
 
 client.on('messageCreate', message =>{
+  if(message.content == "!hallo"){
     console.log(message.content);
-    message.channel.send(message.author.username);
-} )
+    message.channel.send(message.author.username);    
+  }
+
+})
 
 
 client.login(TOKEN);
