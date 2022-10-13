@@ -31,11 +31,15 @@ const commands = [
   },
   {
     name: 'start_party',
-    description: 'put on your disguise!',
+    description: 'start a party!',
   },
   {
     name: 'guess_player',
     description: 'expose someone!',
+  },
+  {
+    name: 'candies',
+    description: 'show how many candies you have in your basket!',
   },
 ];
 
