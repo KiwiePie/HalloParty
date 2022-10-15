@@ -44,6 +44,34 @@ class PartyManager {
         parties[partyIndex].push(CostumeManager.fetchCostume(userID));
         updateJsonFile(data);
     }
+    //remove a player from the party: returns false when party doesn't exist, returns true when there are no players
+    static removePlayer(serverID, userID){
+        if(!guildExists(serverID)) return false;
+        if(!partyExists(serverID, userID)) return false;
+        var data = getJsonData();
+        var parties = data.find(server => server.serverID == serverID).parties;
+        var players = parties.find(party => party.players.map(u => u.userID).include(userID));
+        var index = players.map(u => u.userID).indexOf(userID);
+        players.splice(index, 1);
+        updateJsonFile(data);
+        if(players.length == 0) return true;
+
+    }
+    //delete party
+    static removeParty(serverID, partyIndex){
+        if(!guildExists(serverID)) return false;
+        if(!fetchPartyIndex(serverID, partyIndex)) return false;
+        var data = getJsonData();
+        var parties = data.find(server => server.serverID == serverID).parties;
+        parties.splice(partyIndex, 1);
+        updateJsonFile(data); 
+
+    }
+    //get index of a party in a server
+    static fetchPartyIndex(serverID, userID){
+
+        return fetchServer(serverID).parties,indexOf(fetchParty(serverID, userID))
+    }
     //get all parties in a server
     static fetchServer(serverID){
 
@@ -61,9 +89,7 @@ class PartyManager {
 
 //check if a guild exists in the database
 function guildExists(serverID){
-    if(getJsonData().find(server => server.serverID == serverID)){
-        return true;
-    } 
+    if(getJsonData().find(server => server.serverID == serverID)) return true;
     return false;
 }
 //check if a party exists in the database
@@ -72,7 +98,8 @@ function partyExists(serverID, userID){
     if(guildExists(serverID)){
         var server = getJsonData().find(server => server.serverID == serverID);
         var parties = server.parties;
-        return parties.find(party => party.players.map(u => u.userID).includes(userID));
+        if(parties.find(party => party.players.map(u => u.userID).includes(userID))) return true;
+        return false;
     }
         
     
