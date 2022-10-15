@@ -1,0 +1,21 @@
+[
+    {
+        "serverID": "",
+        "parties": [
+            { 
+                "players":[
+                    {
+                        "userID": "",
+                        "userCostumeURL": "",
+                        "userCostumeName": ""
+                    },
+                    {
+                        "userID": "",
+                        "userCostumeURL": "",
+                        "userCostumeName": ""
+                    }
+                ]
+            }
+        ]
+    }
+]
