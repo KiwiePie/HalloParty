@@ -1,27 +1,19 @@
+// Libaries
+require('dotenv').config(); // dotenv package for configuring environment variables
 const prompt = require('prompt-sync')(); //package for requesting user input
-const fs = require('fs');
-const CostumeManager = require("./costume-manager.js") //calls costume manager
+
+const CostumeManager = require("./costume-manager.js"); //calls costume manager
 const PartyManager = require("./party-manager.js"); //calls party manager
 const defaultCostumes = require('./default-costumes.json'); //load default halloween costumes
 const { REST, Routes, WebhookClient } = require('discord.js');
 
-//set up bot token and id
-if(!fs.existsSync('./client-info.json')) { //check if client information file exists
-    var id = prompt("Paste Discord Bot ID: ");
-    var token = prompt("Paste Discord Bot Token: ");
-    var botInfo = {
-        clientId: id,
-        clientToken: token,
-    };
-    const jsonString = JSON.stringify(botInfo);
-    console.log(jsonString);
-    fs.writeFileSync('./client-info.json', jsonString)
-}
- const data = fs.readFileSync('./client-info.json'); 
- const clientInfo = JSON.parse(data);
- const CLIENT_ID = clientInfo.clientId;
- const TOKEN = clientInfo.clientToken; 
+// Variables
+const {BOT_ID, BOT_TOKEN} = process.env;
 
+//set up bot token and id
+if(!BOT_ID || !BOT_TOKEN) { //check if client information file exists
+  return console.log("Create a file called .env and do BOT_TOKEN=token and on new line (no comma semi colon or anything), BOT_ID = id")
+}
 
 //bot commands
 const commands = [
@@ -71,11 +63,11 @@ const commands = [
 ];
 
 //set up slash commands
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
 (async () => {
   try {
     console.log('Started refreshing application (/) commands.');
-    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+    await rest.put(Routes.applicationCommands(BOT_ID), { body: commands });
     console.log('Successfully reloaded application (/) commands.');
   } catch (error) {
     console.error(error);
@@ -135,7 +127,7 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-client.login(TOKEN);
+client.login(BOT_TOKEN);
 
 
 
@@ -145,4 +137,3 @@ client.login(TOKEN);
 function testUrlImage(url){
 
 }
-
