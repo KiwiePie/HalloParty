@@ -1,16 +1,25 @@
 {
-  "name": "init",
+  "name": "halloparty",
   "version": "1.0.0",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Hallo Party Discord bot",
+  "engines": {
+    "node": "18.x"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "yes",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-specifier-resolution=node --no-warnings .",
+    "dev": "node --experimental-specifier-resolution=node --no-warnings --require dotenv/config .",
+    "manage": "node --experimental-specifier-resolution=node --no-warnings --require dotenv/config init/manage_application_commands.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "dotenv": "^16.0.2",
+    "inquirer": "^9.1.3"
+  },
   "dependencies": {
-    "discord.js": "^14.6.0",
-    "nodemon": "^2.0.20",
-    "prompt-sync": "^4.2.0"
+    "@sapphire/snowflake": "^3.2.2",
+    "discord.js": "^14.3.0",
+    "mongoose": "^6.6.5"
   }
 }
