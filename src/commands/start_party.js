@@ -21,10 +21,10 @@ export const start_party = {
    * You can ignore this
    */
   handle: async function (interaction) {
+    const i = await interaction.deferReply({ ephemeral: true });
     if (await UserManager.getParty(interaction.user.id))
-      return await interaction.reply({
+      return await i.interaction.update({
         content: 'You are already in a party',
-        ephemeral: true,
       });
 
     const party = await PartyManager.start(
@@ -34,7 +34,10 @@ export const start_party = {
     );
 
     await party.addPlayer(interaction.user.id);
+    // await (
+    //   await PartyManager.fetchParty(interaction.client, party.partyId)
+    // ).send(interaction.user.id, 'I joined');
 
-    interaction.reply({ content: 'Party was started!' });
+    i.interaction.deferUpdate({ content: 'Party was started!' });
   },
 };
