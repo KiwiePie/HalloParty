@@ -14,6 +14,7 @@ const partySchema = new mongoose.Schema({
     required: true,
   },
   users: [String],
+  channels: [String],
 });
 
 export default mongoose.model('Parties', partySchema);
