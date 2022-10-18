@@ -9,13 +9,14 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-specifier-resolution=node --no-warnings .",
-    "dev": "node --experimental-specifier-resolution=node --no-warnings --require dotenv/config .",
+    "dev": "nodemon --experimental-specifier-resolution=node --no-warnings --require dotenv/config .",
     "manage": "node --experimental-specifier-resolution=node --no-warnings --require dotenv/config init/manage_application_commands.js"
   },
   "license": "MIT",
   "devDependencies": {
     "dotenv": "^16.0.2",
-    "inquirer": "^9.1.3"
+    "inquirer": "^9.1.3",
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "@sapphire/snowflake": "^3.2.2",

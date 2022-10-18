@@ -11,6 +11,21 @@ export const ping = {
    * This commented out stuff provides intellisense
    */
   handle: function (interaction) {
-    interaction.reply({ content: 'Pong!' });
+    interaction.reply({
+      content: 'Pong!',
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              type: 2,
+              label: 'Ping',
+              style: 3,
+              custom_id: JSON.stringify({ name: 'ping', a: 'hi' }),
+            },
+          ],
+        },
+      ],
+    });
   },
 };
