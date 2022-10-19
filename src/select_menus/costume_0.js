@@ -4,7 +4,6 @@ export const costume_0 = {
   /** @param { import('discord.js').SelectMenuInteraction } interaction */
   handle: async function (interaction) {
     const costumes = await UserManager.getDefaultCostumes();
-    console.log(costumes);
 
     switch (interaction.values[0]) {
       case 'choose':

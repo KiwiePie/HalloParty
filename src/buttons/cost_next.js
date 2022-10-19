@@ -4,7 +4,6 @@ export const cost_next = {
   /** @param { import('discord.js').ButtonInteraction } interaction */
   handle: async function (interaction, params) {
     const costumes = await UserManager.getDefaultCostumes();
-    console.log(costumes);
     const max = costumes.length;
 
     await interaction.update({
