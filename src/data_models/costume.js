@@ -5,6 +5,8 @@ const costumeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  type: String,
+  name: String,
   img_src: String,
 });
 
