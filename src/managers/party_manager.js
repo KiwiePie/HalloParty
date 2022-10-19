@@ -43,28 +43,36 @@ class PartyManager {
 
   static async fetchParties(serverId) {
     const parties = await Parties.find({ server_id: serverId });
-    return parties.map((_id, name) => ({ _id, name }));
+    return parties.map(({ _id, name }) => ({ _id, name }));
   }
 
   static async isPartyChannel(client, channelId) {
     const partyId = cache.parties.findKey(party =>
       party.channels.some(id => channelId === id)
     );
-    if (partyId) return partyId;
-    if (cache.non_party_channels.includes(channelId)) return false;
+    if (partyId) {
+      console.log('cache hit');
+      return partyId;
+    }
+    if (cache.non_party_channels.includes(channelId)) {
+      console.log('cache hit 2');
+      return false;
+    }
+    console.log('cache miss');
     const party = await Parties.findOne({ channels: channelId });
     if (!party) {
       cache.non_party_channels.push(channelId);
       return false;
     }
 
-    cacheParty(client, party);
+    await cacheParty(client, party);
     return party._id;
   }
 
   static async fetchParty(client, partyId) {
     const partyCache = cache.parties.get(partyId);
-    if (partyCache)
+    if (partyCache) {
+      console.log('cache hit');
       return new PartyManager(
         client,
         partyCache.server_id,
@@ -73,6 +81,8 @@ class PartyManager {
         partyCache.channels,
         partyCache.webhooks
       );
+    }
+    console.log('cache miss');
     const party = await Parties.findById(partyId);
     if (!party) return asyncError('Party doesnt exist');
     const p = await cacheParty(client, party);
@@ -100,9 +110,22 @@ class PartyManager {
     const guild = await this.client.guilds.fetch(party.server_id);
     const evRole = await guild.roles.fetch(guild.id);
 
+    let halloCategory = guild.channels.cache.find(
+      chan => chan.type === 4 && chan.name === 'HalloParty'
+    );
+
+    if (!halloCategory) {
+      halloCategory = await guild.channels.create({
+        name: 'HalloParty',
+        reason: 'halloparty',
+        type: 4,
+      });
+    }
+
     const channel = await guild.channels.create({
       name: `${Date.now()}`,
       reason: 'halloparty',
+      parent: halloCategory,
       permissionOverwrites: [
         { id: evRole, deny: 'ViewChannel' },
         { id: userid, allow: 'ViewChannel' },
@@ -116,6 +139,7 @@ class PartyManager {
     party.channels.push(channel.id);
     await user.save();
     await party.save();
+    return channel;
   }
 
   async send(userid, message) {
