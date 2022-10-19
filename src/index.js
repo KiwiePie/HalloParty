@@ -32,3 +32,5 @@ mongoose
   .then(() => console.log('Database connected...'));
 
 client.login(process.env.TOKEN);
+
+process.on('unhandledRejection', console.log);
