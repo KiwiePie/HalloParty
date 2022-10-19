@@ -1,5 +1,6 @@
 import Parties from '../data_models/party';
 import Users from '../data_models/user';
+import Costumes from '../data_models/costume';
 import Servers from '../data_models/server';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import cache from '../../utils/cache';
@@ -148,11 +149,15 @@ class PartyManager {
         'instantiate the PartyManager using the fetchParty method'
       );
     const username = this.users.get(userid)?.clone_name;
+    const costumeId = this.users.get(userid)?.costume_id;
+    const costume = await Costumes.findById(costumeId);
+
     this.webhooks
       .filter((_webhook, uid) => uid !== userid)
       .each(async function (webhook) {
         webhook.send({
           username: username || 'default',
+          avatarURL: costume?.img_src,
           content: message,
         });
       });
