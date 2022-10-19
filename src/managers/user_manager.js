@@ -11,11 +11,13 @@ class UserManager {
   }
 
   async #getUser(userid) {
+    
     return await Users.findById(userid);
+    
   }
 
   async getStarted(cloneName, costumeId) {
-    if (await this.#getUser()) return this.#asyncError('user already started');
+    if (await this.#getUser(this.userid)) return this.#asyncError('user already started');
     // todo: check if costume exists
     const user = new Users({
       _id: this.userid,

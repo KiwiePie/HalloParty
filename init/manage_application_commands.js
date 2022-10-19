@@ -23,7 +23,7 @@ const answers = await inquirer.prompt([
     type: 'input',
     name: 'guild_id',
     when: ans => ans.type,
-    deafult: process.env.GUILD_ID,
+    default: process.env.GUILD_ID,
     message: 'Provide Guild ID. (Press return to use the one in env var)',
     validate: input =>
       Boolean(process.env.GUILD_ID) ||

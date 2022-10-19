@@ -23,7 +23,7 @@ export const start_party = {
   handle: async function (interaction) {
     const i = await interaction.deferReply({ ephemeral: true });
     if (await UserManager.getParty(interaction.user.id))
-      return await i.interaction.update({
+      return await i.interaction.editReply({
         content: 'You are already in a party',
       });
 
