@@ -33,11 +33,13 @@ export const start_party = {
       interaction.options.get('name').value
     );
 
-    await party.addPlayer(interaction.user.id);
+    const channel = await party.addPlayer(interaction.user.id);
     // await (
     //   await PartyManager.fetchParty(interaction.client, party.partyId)
     // ).send(interaction.user.id, 'I joined');
 
-    i.interaction.deferUpdate({ content: 'Party was started!' });
+    i.interaction.editReply({
+      content: `Party was started! You were added. Your channel is <#${channel.id}>`,
+    });
   },
 };

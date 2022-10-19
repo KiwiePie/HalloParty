@@ -1,5 +1,5 @@
 import Users from '../data_models/user';
-import Parties from '../data_models/party';
+import PartyManager from './party_manager';
 
 class UserManager {
   /**
@@ -33,23 +33,9 @@ class UserManager {
     if (!user) return this.#asyncError('user needs to get started');
     if (user.party_id) return this.#asyncError('User already in a party');
 
-    const party = await Parties.findById(partyId);
-    if (!party) return this.#asyncError('Wrong party id');
-
-    const guild = await this.client.guilds.fetch(party.server_id);
-    const channel = await guild.channels.create({
-      name: `${Date.now()}`,
-      reason: 'halloparty',
-      permissionOverwrites: [
-        { id: guild.roles.everyone, deny: 'ViewChannel' },
-        { id: this.userid, allow: 'ViewChannel' },
-      ],
-    });
-    const webhook = await channel.createWebhook({ name: 'HalloParty' });
-
-    party.users.push(this.userid);
-    user.party_id = partyId;
-    user.secret_webhook_id = webhook.id;
+    const partyManager = await PartyManager.fetchParty(this.client, partyId);
+    const channel = await partyManager.addPlayer(this.userid);
+    return channel;
   }
 
   async send(message) {
