@@ -8,6 +8,7 @@ export async function messageCreate(message) {
     message.client,
     message.channelId
   );
+  if (!partyId) return;
   const partyManager = await PartyManager.fetchParty(message.client, partyId);
   await partyManager.send(message.author.id, message.content);
 }
