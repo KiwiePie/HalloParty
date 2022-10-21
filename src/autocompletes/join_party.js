@@ -5,7 +5,6 @@ export const join_party = {
   handle: async function (interaction) {
     const parties = await PartyManager.fetchParties(interaction.guildId);
     const p = parties.map(party => ({ name: party.name, value: party._id }));
-    console.log(p);
     await interaction.respond(p);
   },
 };

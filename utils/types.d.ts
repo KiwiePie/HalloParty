@@ -14,11 +14,13 @@ type Party = {
   server_id: ServerId;
   channels: Array<ChannelId>;
   users: Users;
+  guessed_users: Array<UserId>;
   webhooks: Webhooks;
 };
 
 type User = {
   _id: UserId;
+  username: string,
   clone_name: string;
   secret_webhook_id: string;
   costume_id: string;

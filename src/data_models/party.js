@@ -15,6 +15,7 @@ const partySchema = new mongoose.Schema({
   },
   users: [String],
   channels: [String],
+  guessed_users: [String],
 });
 
 export default mongoose.model('Parties', partySchema);

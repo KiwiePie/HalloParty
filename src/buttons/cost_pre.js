@@ -30,7 +30,7 @@ export const cost_pre = {
               style: 3,
               custom_id: JSON.stringify({
                 name: 'cost_select',
-                p: costumes[params.p]._id,
+                id: costumes[params.p]._id,
               }),
             },
             {

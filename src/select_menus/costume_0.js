@@ -3,10 +3,9 @@ import UserManager from '../managers/user_manager';
 export const costume_0 = {
   /** @param { import('discord.js').SelectMenuInteraction } interaction */
   handle: async function (interaction) {
-    const costumes = await UserManager.getDefaultCostumes();
-
     switch (interaction.values[0]) {
       case 'choose':
+        const costumes = await UserManager.getDefaultCostumes();
         await interaction.update({
           embeds: [
             {

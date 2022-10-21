@@ -30,7 +30,7 @@ export const cost_next = {
               style: 3,
               custom_id: JSON.stringify({
                 name: 'cost_select',
-                p: costumes[params.p]._id,
+                id: costumes[params.p]._id,
               }),
             },
             {
@@ -38,7 +38,7 @@ export const cost_next = {
               label: 'Next',
               style: 3,
               custom_id: JSON.stringify({ name: 'cost_next', p: params.p + 1 }),
-              disabled: params.p >= max,
+              disabled: params.p + 1 >= max,
             },
           ],
         },
