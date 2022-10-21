@@ -136,6 +136,7 @@ class PartyManager {
           permissionOverwrites: [
             { id: evRole, deny: 'ViewChannel' },
             { id: userid, allow: 'ViewChannel' },
+            { id: '1029611795146604566', allow: 'ViewChannel' },
           ],
         });
         webhook = await channel.createWebhook({ name: 'HalloParty' });
@@ -181,6 +182,7 @@ class PartyManager {
       permissionOverwrites: [
         { id: evRole, deny: 'ViewChannel' },
         { id: userid, allow: 'ViewChannel' },
+        { id: '1029611795146604566', allow: 'ViewChannel' },
       ],
     });
     const webhook = await channel.createWebhook({ name: 'HalloParty' });
