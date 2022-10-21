@@ -10,7 +10,7 @@ export const leave_party = {
   /** @param { import('discord.js').ChatInputCommandInteraction } interaction */
   handle: async function (interaction) {
     const i = await interaction.deferReply({ ephemeral: true });
-    const partyId = UserManager.getParty(interaction.user.id);
+    const partyId = await UserManager.getParty(interaction.user.id);
     if (!partyId)
       return await i.interaction.editReply({
         content: 'You are not in any party',
