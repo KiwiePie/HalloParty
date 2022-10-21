@@ -4,3 +4,4 @@ export * from './join_party';
 export * from './costume';
 export * from './guess';
 export * from './help';
+export * from './leave_party';

@@ -265,6 +265,34 @@ class PartyManager {
     }
   }
 
+  async removePlayer(userid) {
+    if (!this.partyId)
+      return asyncError('use start method only to instantiate the manager');
+
+    const party = await Parties.findById(this.partyId);
+    if (!party)
+      return asyncError('this shouldnt have occured but party doesnt exist');
+
+    const user = await Users.findById(userid);
+    if (!user) return asyncError('User needs to get started');
+
+    user.party_id = '';
+    party.users = party.users.filter(u => u !== userid);
+    party.channels = party.channels.filter(ch => ch !== user.channel_id);
+    await user.save();
+    await party.save();
+
+    const partyCache = cache.parties.get(this.partyId);
+    if (partyCache) {
+      partyCache.users.delete(user._id);
+      partyCache.channels = partyCache.channels.filter(
+        ch => ch !== user.channel_id
+      );
+      partyCache.webhooks.delete(user._id);
+      cache.parties.set(this.partyId, partyCache);
+    }
+  }
+
   static async getAllGuessedPlayers(partyId) {
     const party = await Parties.findById(partyId);
     return party?.guessed_users;
