@@ -305,7 +305,34 @@ class PartyManager {
     return users.map(u => ({ _id: u._id, clone: u.clone_name }));
   }
 
-  async removeParty() {}
+  async removeParty() {
+    if (!this.partyId)
+      return asyncError('use start method only to instantiate the manager');
+
+    const party = await Parties.findById(this.partyId);
+    if (!party)
+      return asyncError('this shouldnt have occured but party doesnt exist');
+
+    for (let userid of party.users) {
+      const user = await Users.findById(userid);
+      if (!user) continue;
+      user.party_id = '';
+      user.channel_id = '';
+      user.secret_webhook_id = '';
+      await user.save();
+    }
+
+    const guild = await this.client.guilds.fetch(this.serverId);
+
+    for (let channelId of party.channels) {
+      const channel = await guild.channels.fetch(channelId);
+      if (!channel) continue;
+      await channel.delete();
+    }
+
+    await party.delete();
+    cache.parties.delete(this.partyId);
+  }
 }
 
 /**

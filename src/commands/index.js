@@ -5,3 +5,4 @@ export * from './costume';
 export * from './guess';
 export * from './help';
 export * from './leave_party';
+export * from './clean_party_channels';
