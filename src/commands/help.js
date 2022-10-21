@@ -9,12 +9,12 @@ export const help = {
     interaction.reply({
       content: `List of commands:
 
-</costume:> :: to set a costume and alias
-</start_party:> :: to start a party
-</join_party:> :: to join a party
-</guess:> :: to expose someone
-</leave_party:> :: to leave the party
-</cleanPartyChannels:> :: for mods to delete a party and all related channels
+</costume:1032293823755321444> :: to set a costume and alias
+</start_party:1030382597093740596> :: to start a party
+</join_party:1030498468801810464> :: to join a party
+</guess:1032633629450436729> :: to expose someone
+</leave_party:1033076644149219388> :: to leave the party
+</clean_party_channels:1033076638860181566> :: for mods to delete a party and all related channels
     `,
     });
   },
