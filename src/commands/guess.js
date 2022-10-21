@@ -1,3 +1,4 @@
+import PartyManager from '../managers/party_manager';
 import UserManager from '../managers/user_manager';
 
 export const guess = {
@@ -23,14 +24,35 @@ export const guess = {
 
   /** @param { import('discord.js').ChatInputCommandInteraction } interaction */
   handle: async function (interaction) {
+    const i = await interaction.deferReply({ ephemeral: true });
+
     const cloneGuess = interaction.options.get('player').value;
     const user = interaction.options.getUser('user');
     const cloneName = await UserManager.getCloneName(user.id);
-    if (cloneGuess === cloneName)
-      return await interaction.reply({
-        content: 'con grtulations, you guessed right',
+    const partyId = await UserManager.getParty(interaction.user.id);
+
+    if (cloneGuess === cloneName) {
+      const partyManager = await PartyManager.fetchParty(
+        interaction.client,
+        partyId
+      );
+
+      const guesserCloneName = await UserManager.getCloneName(
+        interaction.user.id
+      );
+      await partyManager.systemMessage(
+        `**${guesserCloneName}** guessed ${cloneName} (${user})`
+      );
+      await partyManager.removeGuessedPlayer(user.id);
+
+      return await i.interaction.editReply({
+        content: 'congratulations, you guessed right',
         ephemeral: true,
       });
-    return await interaction.reply({ content: 'wrong guess', ephemeral: true });
+    }
+    return await i.interaction.editReply({
+      content: 'wrong guess',
+      ephemeral: true,
+    });
   },
 };

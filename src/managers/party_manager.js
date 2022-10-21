@@ -187,6 +187,7 @@ class PartyManager {
 
     user.party_id = this.partyId;
     user.secret_webhook_id = webhook.id;
+    user.channel_id = channel.id;
     party.users.push(userid);
     party.channels.push(channel.id);
     await user.save();
@@ -223,7 +224,16 @@ class PartyManager {
       });
   }
 
-  async removePlayer(userid) {
+  async systemMessage(message) {
+    this.webhooks.each(async function (webhook) {
+      webhook.send({
+        username: 'System',
+        content: message,
+      });
+    });
+  }
+
+  async removeGuessedPlayer(userid) {
     if (!this.partyId)
       return asyncError('use start method only to instantiate the manager');
 
@@ -235,18 +245,27 @@ class PartyManager {
     if (!user) return asyncError('User needs to get started');
 
     user.party_id = '';
-    party.users.filter(u => u !== userid);
-    party.channels.filter(ch => ch !== user.channel_id);
+    party.users = party.users.filter(u => u !== userid);
+    party.channels = party.channels.filter(ch => ch !== user.channel_id);
+    party.guessed_users.push(userid);
     await user.save();
     await party.save();
 
     const partyCache = cache.parties.get(this.partyId);
     if (partyCache) {
       partyCache.users.delete(user._id);
-      partyCache.channels.filter(ch => ch !== user.channel_id);
+      partyCache.channels = partyCache.channels.filter(
+        ch => ch !== user.channel_id
+      );
       partyCache.webhooks.delete(user._id);
+      partyCache.guessed_users.push(userid);
       cache.parties.set(this.partyId, partyCache);
     }
+  }
+
+  static async getAllGuessedPlayers(partyId) {
+    const party = await Parties.findById(partyId);
+    return party?.guessed_users;
   }
 
   async getAllplayers() {
@@ -277,10 +296,12 @@ async function cacheParty(client, party) {
 
   const p = {
     _id: party._id,
+    name: party.name,
     server_id: party.server_id,
     channels: party.channels,
     users: new Collection(users.map(user => [user._id, user])),
     webhooks: webhooks,
+    guessed_users: [],
   };
   cache.parties.set(party._id, p);
   return p;

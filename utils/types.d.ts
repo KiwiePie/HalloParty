@@ -14,6 +14,7 @@ type Party = {
   server_id: ServerId;
   channels: Array<ChannelId>;
   users: Users;
+  guessed_users: Array<UserId>;
   webhooks: Webhooks;
 };
 

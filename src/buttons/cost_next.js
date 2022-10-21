@@ -38,7 +38,7 @@ export const cost_next = {
               label: 'Next',
               style: 3,
               custom_id: JSON.stringify({ name: 'cost_next', p: params.p + 1 }),
-              disabled: params.p >= max,
+              disabled: params.p + 1 >= max,
             },
           ],
         },
