@@ -1,3 +1,5 @@
+import UserManager from '../managers/user_manager';
+
 export const costume = {
   data: {
     name: 'costume',
@@ -10,6 +12,13 @@ export const costume = {
    * You can ignore this
    */
   handle: async function (interaction) {
+    const partyId = await UserManager.getParty(interaction.user.id);
+    if (partyId)
+      return await interaction.reply({
+        content: 'You cant change costume or name while you are in a party',
+        ephemeral: true,
+      });
+
     interaction.reply({
       ephemeral: true,
       components: [

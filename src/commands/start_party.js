@@ -22,6 +22,13 @@ export const start_party = {
    */
   handle: async function (interaction) {
     const i = await interaction.deferReply({ ephemeral: true });
+
+    if (!(await UserManager.getUser(interaction.user.id)))
+      return i.interaction.editReply({
+        content:
+          'You are not registered yet!. Use the </costume:1032293823755321444> command to get registered',
+      });
+
     if (await UserManager.getParty(interaction.user.id))
       return await i.interaction.editReply({
         content: 'You are already in a party',

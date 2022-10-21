@@ -18,15 +18,8 @@ class UserManager {
     return await Users.findById(this.userid);
   }
 
-  async getStarted(cloneName, costumeId) {
-    if (await this.#getUser()) return this.#asyncError('user already started');
-    // todo: check if costume exists
-    const user = new Users({
-      _id: this.userid,
-      clone_name: cloneName,
-      costume_id: costumeId,
-    });
-    await user.save();
+  static async getUser(userid) {
+    return await Users.findById(userid);
   }
 
   async getCostume(id) {
@@ -34,7 +27,11 @@ class UserManager {
   }
 
   async registerUser() {
-    const user = new Users({ _id: this.userid });
+    const dUser = await this.client.users.fetch(this.userid);
+    const user = new Users({
+      _id: this.userid,
+      username: dUser?.username || 'Unknown',
+    });
     return await user.save();
   }
 
@@ -93,6 +90,11 @@ class UserManager {
   static async getParty(userid) {
     const user = await Users.findById(userid);
     return user?.party_id;
+  }
+
+  static async getCloneName(userid) {
+    const user = await Users.findById(userid);
+    return user?.clone_name;
   }
 
   #asyncError(message) {

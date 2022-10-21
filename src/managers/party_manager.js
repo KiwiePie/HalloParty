@@ -108,6 +108,57 @@ class PartyManager {
     const user = await Users.findById(userid);
     if (!user) return asyncError('User needs to get started');
 
+    if (user.party_id) return asyncError('User already in party');
+
+    if (user.secret_webhook_id && user.channel_id) {
+      const guild = await this.client.guilds.fetch(party.server_id);
+      let channel = await guild.channels.fetch(user.channel_id);
+      let webhook = await this.client.fetchWebhook(user.secret_webhook_id);
+      if (!channel) {
+        const evRole = await guild.roles.fetch(guild.id);
+
+        let halloCategory = guild.channels.cache.find(
+          chan => chan.type === 4 && chan.name === 'HalloParty'
+        );
+
+        if (!halloCategory) {
+          halloCategory = await guild.channels.create({
+            name: 'HalloParty',
+            reason: 'halloparty',
+            type: 4,
+          });
+        }
+
+        channel = await guild.channels.create({
+          name: `${user.username}-room`,
+          reason: 'halloparty',
+          parent: halloCategory,
+          permissionOverwrites: [
+            { id: evRole, deny: 'ViewChannel' },
+            { id: userid, allow: 'ViewChannel' },
+          ],
+        });
+        webhook = await channel.createWebhook({ name: 'HalloParty' });
+      }
+
+      user.party_id = this.partyId;
+      user.secret_webhook_id = webhook.id;
+      user.channel_id = channel.id;
+      party.users.push(userid);
+      party.channels.push(channel.id);
+      await user.save();
+      await party.save();
+
+      const partyCache = cache.parties.get(this.partyId);
+      if (partyCache) {
+        partyCache.users.set(user._id, user);
+        partyCache.channels.push(channel.id);
+        partyCache.webhooks.set(user._id, webhook);
+        cache.parties.set(this.partyId, partyCache);
+      }
+      return channel;
+    }
+
     const guild = await this.client.guilds.fetch(party.server_id);
     const evRole = await guild.roles.fetch(guild.id);
 
@@ -124,7 +175,7 @@ class PartyManager {
     }
 
     const channel = await guild.channels.create({
-      name: `${Date.now()}`,
+      name: `${user.username}-room`,
       reason: 'halloparty',
       parent: halloCategory,
       permissionOverwrites: [
@@ -140,6 +191,15 @@ class PartyManager {
     party.channels.push(channel.id);
     await user.save();
     await party.save();
+
+    const partyCache = cache.parties.get(this.partyId);
+    if (partyCache) {
+      partyCache.users.set(user._id, user);
+      partyCache.channels.push(channel.id);
+      partyCache.webhooks.set(user._id, webhook);
+      cache.parties.set(this.partyId, partyCache);
+    }
+
     return channel;
   }
 
@@ -163,7 +223,38 @@ class PartyManager {
       });
   }
 
-  async removePlayer(_userid) {}
+  async removePlayer(userid) {
+    if (!this.partyId)
+      return asyncError('use start method only to instantiate the manager');
+
+    const party = await Parties.findById(this.partyId);
+    if (!party)
+      return asyncError('this shouldnt have occured but party doesnt exist');
+
+    const user = await Users.findById(userid);
+    if (!user) return asyncError('User needs to get started');
+
+    user.party_id = '';
+    party.users.filter(u => u !== userid);
+    party.channels.filter(ch => ch !== user.channel_id);
+    await user.save();
+    await party.save();
+
+    const partyCache = cache.parties.get(this.partyId);
+    if (partyCache) {
+      partyCache.users.delete(user._id);
+      partyCache.channels.filter(ch => ch !== user.channel_id);
+      partyCache.webhooks.delete(user._id);
+      cache.parties.set(this.partyId, partyCache);
+    }
+  }
+
+  async getAllplayers() {
+    const users = await Users.find({
+      _id: { $in: this.users.map(u => u._id) },
+    });
+    return users.map(u => ({ _id: u._id, clone: u.clone_name }));
+  }
 
   async removeParty() {}
 }
