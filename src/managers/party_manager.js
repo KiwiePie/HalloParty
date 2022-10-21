@@ -145,6 +145,7 @@ class PartyManager {
       user.party_id = this.partyId;
       user.secret_webhook_id = webhook.id;
       user.channel_id = channel.id;
+      user.channel_server = guild.id;
       party.users.push(userid);
       party.channels.push(channel.id);
       await user.save();
@@ -190,6 +191,7 @@ class PartyManager {
     user.party_id = this.partyId;
     user.secret_webhook_id = webhook.id;
     user.channel_id = channel.id;
+    user.channel_server = guild.id;
     party.users.push(userid);
     party.channels.push(channel.id);
     await user.save();
@@ -318,6 +320,7 @@ class PartyManager {
       if (!user) continue;
       user.party_id = '';
       user.channel_id = '';
+      user.channel_server = '';
       user.secret_webhook_id = '';
       await user.save();
     }
@@ -332,6 +335,24 @@ class PartyManager {
 
     await party.delete();
     cache.parties.delete(this.partyId);
+  }
+
+  /**
+   * @param { import('discord.js').Guild } guild
+   */
+  static async cleanOrphans(guild) {
+    const users = await Users.find({ party_id: '', channel_server: guild.id });
+    for (let user of users) {
+      if (!user.channel_id) continue;
+      const channel = await guild.channels.fetch(user.channel_id);
+      if (!channel) continue;
+      await channel.delete();
+
+      user.channel_id = '';
+      user.channel_server = '';
+      user.secret_webhook_id = '';
+      await user.save();
+    }
   }
 }
 

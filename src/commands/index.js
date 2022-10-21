@@ -6,3 +6,4 @@ export * from './guess';
 export * from './help';
 export * from './leave_party';
 export * from './clean_party_channels';
+export * from './clean_orphan_channels';

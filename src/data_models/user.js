@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   clone_name: String,
   channel_id: String,
+  channel_server: String,
   secret_webhook_id: String,
   costume_id: String,
   party_id: String,

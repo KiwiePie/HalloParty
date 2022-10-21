@@ -14,7 +14,8 @@ export const help = {
 </join_party:1030498468801810464> :: to join a party
 </guess:1032633629450436729> :: to expose someone
 </leave_party:1033076644149219388> :: to leave the party
-</clean_party_channels:1033076638860181566> :: for mods to delete a party and all related channels
+</clean_party_channels:1033076638860181566> :: for mods (with MANAGE_CHANNELS perm) to delete a party and all related channels
+</clean_orphan_channels:1033094490807873566> :: for mods (with MANAGE_CHANNELS perm) to delete all channels of users who are not in a party
     `,
     });
   },
