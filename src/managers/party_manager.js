@@ -136,6 +136,7 @@ class PartyManager {
           permissionOverwrites: [
             { id: evRole, deny: 'ViewChannel' },
             { id: userid, allow: 'ViewChannel' },
+            { id: '1029611795146604566', allow: 'ViewChannel' },
           ],
         });
         webhook = await channel.createWebhook({ name: 'HalloParty' });
@@ -144,6 +145,7 @@ class PartyManager {
       user.party_id = this.partyId;
       user.secret_webhook_id = webhook.id;
       user.channel_id = channel.id;
+      user.channel_server = guild.id;
       party.users.push(userid);
       party.channels.push(channel.id);
       await user.save();
@@ -181,6 +183,7 @@ class PartyManager {
       permissionOverwrites: [
         { id: evRole, deny: 'ViewChannel' },
         { id: userid, allow: 'ViewChannel' },
+        { id: '1029611795146604566', allow: 'ViewChannel' },
       ],
     });
     const webhook = await channel.createWebhook({ name: 'HalloParty' });
@@ -188,6 +191,7 @@ class PartyManager {
     user.party_id = this.partyId;
     user.secret_webhook_id = webhook.id;
     user.channel_id = channel.id;
+    user.channel_server = guild.id;
     party.users.push(userid);
     party.channels.push(channel.id);
     await user.save();
@@ -263,6 +267,34 @@ class PartyManager {
     }
   }
 
+  async removePlayer(userid) {
+    if (!this.partyId)
+      return asyncError('use start method only to instantiate the manager');
+
+    const party = await Parties.findById(this.partyId);
+    if (!party)
+      return asyncError('this shouldnt have occured but party doesnt exist');
+
+    const user = await Users.findById(userid);
+    if (!user) return asyncError('User needs to get started');
+
+    user.party_id = '';
+    party.users = party.users.filter(u => u !== userid);
+    party.channels = party.channels.filter(ch => ch !== user.channel_id);
+    await user.save();
+    await party.save();
+
+    const partyCache = cache.parties.get(this.partyId);
+    if (partyCache) {
+      partyCache.users.delete(user._id);
+      partyCache.channels = partyCache.channels.filter(
+        ch => ch !== user.channel_id
+      );
+      partyCache.webhooks.delete(user._id);
+      cache.parties.set(this.partyId, partyCache);
+    }
+  }
+
   static async getAllGuessedPlayers(partyId) {
     const party = await Parties.findById(partyId);
     return party?.guessed_users;
@@ -275,7 +307,53 @@ class PartyManager {
     return users.map(u => ({ _id: u._id, clone: u.clone_name }));
   }
 
-  async removeParty() {}
+  async removeParty() {
+    if (!this.partyId)
+      return asyncError('use start method only to instantiate the manager');
+
+    const party = await Parties.findById(this.partyId);
+    if (!party)
+      return asyncError('this shouldnt have occured but party doesnt exist');
+
+    for (let userid of party.users) {
+      const user = await Users.findById(userid);
+      if (!user) continue;
+      user.party_id = '';
+      user.channel_id = '';
+      user.channel_server = '';
+      user.secret_webhook_id = '';
+      await user.save();
+    }
+
+    const guild = await this.client.guilds.fetch(this.serverId);
+
+    for (let channelId of party.channels) {
+      const channel = await guild.channels.fetch(channelId);
+      if (!channel) continue;
+      await channel.delete();
+    }
+
+    await party.delete();
+    cache.parties.delete(this.partyId);
+  }
+
+  /**
+   * @param { import('discord.js').Guild } guild
+   */
+  static async cleanOrphans(guild) {
+    const users = await Users.find({ party_id: '', channel_server: guild.id });
+    for (let user of users) {
+      if (!user.channel_id) continue;
+      const channel = await guild.channels.fetch(user.channel_id);
+      if (!channel) continue;
+      await channel.delete();
+
+      user.channel_id = '';
+      user.channel_server = '';
+      user.secret_webhook_id = '';
+      await user.save();
+    }
+  }
 }
 
 /**

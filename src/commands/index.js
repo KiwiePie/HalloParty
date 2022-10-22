@@ -3,3 +3,7 @@ export * from './start_party';
 export * from './join_party';
 export * from './costume';
 export * from './guess';
+export * from './help';
+export * from './leave_party';
+export * from './clean_party_channels';
+export * from './clean_orphan_channels';
